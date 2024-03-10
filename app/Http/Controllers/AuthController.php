@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
@@ -29,9 +30,9 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
+        $credentials = $request->only('email', 'password');
         // Coba autentikasi pengguna
-        if (auth()->attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::validate($credentials)) {
             // jika ini sudah terpenuhi maka bisadikatakan sudah login
             // Autentikasi berhasil, kirim OTP dan redirect ke halaman verifikasi OTP
             $this->sendOtp($request); 
@@ -112,7 +113,6 @@ class AuthController extends Controller
     
     public function resendOtp(){
 
-        $otp = rand(100000, 999999);
         $email = session()->get('email');
         $user = User::where('email', $email)->first();
         $this->sendingOtp($user);

@@ -27,7 +27,7 @@ Route::get('/login/otp-verification', [AuthController::class, 'otpVerification']
 Route::post('/login',[AuthController::class,'login'])->name('login');
 Route::post('/register',[AuthController::class,'register'])->name('register');
 // Route::post('/login/send-otp', [AuthController::class, 'sendOtp'])->name('sendotp');
-Route::post('/login/resend-otp', [AuthController::class, 'resendOtp'])->name('resend_otp');
-Route::post('/login/verify-otp',[AuthController::class,'verifyOtp'])->name('verifyOtp');
+Route::post('/login/resend-otp', [AuthController::class, 'resendOtp'])->name('resend_otp')->middleware('hasOtp');
+Route::post('/login/verify-otp',[AuthController::class,'verifyOtp'])->name('verifyOtp')->middleware('hasOtp');
 
-Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard.index')->middleware('auth');
+Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard.index')->middleware('auth','hasOtp');
