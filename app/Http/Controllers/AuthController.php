@@ -90,9 +90,9 @@ class AuthController extends Controller
             ]);
             // dd($user);
             // Send OTP via email 
-            // Mail::send('email.otp', ['otp' => $otp], function ($message) use ($request) {
-            //     $message->to($request->input('email'))->subject('Your OTP');
-            // });
+            Mail::send('email.otp', ['otp' => $otp], function ($message) use ($request) {
+                $message->to($request->input('email'))->subject('Your OTP');
+            });
             
             return response()->json(['message' => 'OTP sent successfully']);
         }
@@ -134,12 +134,12 @@ class AuthController extends Controller
             'otp_code' => $otp, // Store plain OTP, don't hash it
             'otp_expired_at' => Carbon::now()->addMinutes(2) // Corrected method name
         ]);
-        return redirect()->back()->with('success', 'OTP has been resent successfully.');
         // dd($user);
         // Send OTP via email 
-        // Mail::send('email.otp', ['otp' => $otp], function ($message) use ($request) {
-        //     $message->to($request->input('email'))->subject('Your OTP');
-        // });
+        Mail::send('email.otp', ['otp' => $otp], function ($message) use ($user) {
+            $message->to($user['email'])->subject('Your OTP');
+        });
+        return redirect()->back()->with('success', 'OTP has been resent successfully.');
     }
     public function sendingOtp($user)
     {
@@ -149,8 +149,8 @@ class AuthController extends Controller
             'otp_expired_at' => Carbon::now()->addMinutes(2) // Corrected method name
         ]);
         // Send OTP via email 
-        // Mail::send('email.otp', ['otp' => $otp], function ($message) use ($request) {
-        //     $message->to($request->input('email'))->subject('Your OTP');
-        // });
+        Mail::send('email.otp', ['otp' => $otp], function ($message) use ($user) {
+            $message->to($user['email'])->subject('Your OTP');
+        });
     }
 }
