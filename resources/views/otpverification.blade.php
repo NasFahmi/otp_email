@@ -28,6 +28,7 @@
               </button>
             </div>
           </form>
+          <a href="{{route('resend_otp')}}">resend otp</a>
         </div>
       </div>
     </div>

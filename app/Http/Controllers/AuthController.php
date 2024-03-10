@@ -79,9 +79,23 @@ class AuthController extends Controller
     public function sendOtp(Request $request)
     {
         // Generate OTP
+        $otp = rand(100000, 999999);
         $user = User::where('email', $request->email)->first();
         // dd($user);
-        $this->sendingOtp($user);
+        if ($user) {
+            // Update OTP and its expiration time
+            $user->update([
+                'otp_code' => $otp, // Store plain OTP, don't hash it
+                'otp_expired_at' => Carbon::now()->addMinutes(2) // Corrected method name
+            ]);
+            // dd($user);
+            // Send OTP via email 
+            // Mail::send('email.otp', ['otp' => $otp], function ($message) use ($request) {
+            //     $message->to($request->input('email'))->subject('Your OTP');
+            // });
+            
+            return response()->json(['message' => 'OTP sent successfully']);
+        }
         
         return response()->json(['message' => 'User not found'], 404);
     }
@@ -113,9 +127,19 @@ class AuthController extends Controller
     
     public function resendOtp(){
 
+        $otp = rand(100000, 999999);
         $email = session()->get('email');
         $user = User::where('email', $email)->first();
-        $this->sendingOtp($user);
+        $user->update([
+            'otp_code' => $otp, // Store plain OTP, don't hash it
+            'otp_expired_at' => Carbon::now()->addMinutes(2) // Corrected method name
+        ]);
+        return redirect()->back()->with('success', 'OTP has been resent successfully.');
+        // dd($user);
+        // Send OTP via email 
+        // Mail::send('email.otp', ['otp' => $otp], function ($message) use ($request) {
+        //     $message->to($request->input('email'))->subject('Your OTP');
+        // });
     }
     public function sendingOtp($user)
     {
@@ -128,6 +152,5 @@ class AuthController extends Controller
         // Mail::send('email.otp', ['otp' => $otp], function ($message) use ($request) {
         //     $message->to($request->input('email'))->subject('Your OTP');
         // });
-        return response()->json(['message' => 'OTP sent successfully']);
     }
 }
